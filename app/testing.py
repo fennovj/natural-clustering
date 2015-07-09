@@ -5,12 +5,12 @@ Created on Tue Jun 02 13:21:01 2015
 @author: Fenno
 """
 
-
 from numpy import unique, array, mean, sum, shape, argmin
 from numpy.random import randint, rand
 from scipy.spatial.distance import minkowski
 
-from kmeans import kMeansCluster, CACluster
+from clustering.kmeans import kMeansCluster, CACluster
+
 
 def simpleDataset(n = 20, spread = 0.6):
     seeds = array([(0.5, 0.5), (0.5,1.5), (1.5,0.5), (1.5,1.5)]  * n)

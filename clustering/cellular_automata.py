@@ -1,11 +1,6 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Mon Jun 01 19:42:16 2015
+__author__ = 'Fenno'
 
-@author: Fenno
-"""
 
-from sklearn.cluster import KMeans as sklearnKMeans
 from numpy import array, shape, sort, zeros, copy
 from scipy.spatial.distance import minkowski
 
@@ -13,10 +8,10 @@ def swap(data, i, j):
     t = copy(data[i,:])
     data[i,:] = data[j,:]
     data[j,:] = t
-    
+
 def getBoundaries(data, distmat, tape, n_clusters):
     n = shape(data)[0]
-    distances = array([distmat[tape[i], tape[(i+1)%n]] for i in range(n)])    
+    distances = array([distmat[tape[i], tape[(i+1)%n]] for i in range(n)])
     return sort(distances.argsort()[-n_clusters:][::-1])
 
 def findBoundaries(data, distmat, tape, n_clusters):
@@ -33,23 +28,23 @@ def findBoundaries(data, distmat, tape, n_clusters):
 
 def CACluster(data, n_clusters, R = None, norm = 2, maxIter = 2000):
 
-    n = shape(data)[0]    
+    n = shape(data)[0]
     distances = array([[minkowski(data[i,:], data[j,:], norm) for i in range(n) ] for j in range(n)])
 
-    tape = range(n)        
-    
+    tape = range(n)
+
     if R is None:
         R = shape(data)[0] / 2
     changeMade = count = 1
-    equivalent = False    
+    equivalent = False
     boundaries = getBoundaries(data,distances,tape,n_clusters)
-    
+
     while((not equivalent) and changeMade and count < maxIter):
         count = count + 1
-        if count % 100 == 0: 
+        if count % 100 == 0:
             print count, changeMade
         changeMade= 0
-        
+
         for r in range(3, R):
             for i in range(n):
                 dist1 = distances[tape[i], tape[(i+1)%n]]#minkowski(data[i,:], data[(i+1)%n,:],2)
@@ -64,14 +59,3 @@ def CACluster(data, n_clusters, R = None, norm = 2, maxIter = 2000):
         equivalent = (boundaries == newboundaries).all()
         boundaries = newboundaries
     return findBoundaries(data, distances, tape, n_clusters)
-
-
-
-def kMeansCluster(data, n_clusters, max_iter = 300, n_init = 12, n_jobs = 1, tol = 1e-4, verbose = 0):    
-    """Trans a KMeans model, using sklearn
-    This method is nothing more than a wrapper for KMeans(args).fit_predict(data)
-    """    
-    model = sklearnKMeans(n_clusters = n_clusters, max_iter = max_iter, n_init = n_init, n_jobs = n_jobs, tol = tol, verbose = verbose)
-    return model.fit_predict(data)
-
-
