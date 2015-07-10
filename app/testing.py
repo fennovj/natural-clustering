@@ -6,10 +6,11 @@ Created on Tue Jun 02 13:21:01 2015
 """
 
 from numpy import unique, array, mean, sum, shape, argmin
-from numpy.random import randint, rand
+from numpy.random import rand
 from scipy.spatial.distance import minkowski
-
-from clustering.kmeans import kMeansCluster, CACluster
+from clustering.clustering import randomCluster, perfectCluster
+from clustering.kmeans import kMeansCluster
+#from clustering.cellular_automata import import CACluster
 
 
 def simpleDataset(n = 20, spread = 0.6):
@@ -18,12 +19,6 @@ def simpleDataset(n = 20, spread = 0.6):
     offsets = spread* rand((4*n),2) - (spread/2)
     return seeds+offsets, labels
     
-
-def randomCluster(data, n_clusters):
-    """Just assigns every datapoint a random cluster.
-    You should at least beat this score to be considered a clustering method"""
-    return randint(n_clusters,size=shape(data)[0])    
-
 def getCentroids(data, labels):
     """Returns a tuple of labelnames, and centroids, ordered in the same way"""
     return array([mean(data[labels == name, :],0) for name in unique(labels)])
@@ -62,22 +57,26 @@ def shuffle(data, classes = None):
     classes = classes[key]
     return data, classes
 
+def testclusterers(data, n_cluster, **clusterers):
+
+    keys = clusterers.keys()
+    labels = [clusterers[key].cluster(data, n_cluster) for key in keys]
+
+    for i, key in enumerate(keys):
+        print key, "score:", score(data,labels[i])
+
 if __name__ == '__main__':
-    from sklearn import datasets
-    iris = datasets.load_iris().data    
-    target = datasets.load_iris().target
-    iris, target = shuffle(iris, target)    
+    #from sklearn import datasets
+    #iris = datasets.load_iris().data
+    #target = datasets.load_iris().target
+    #iris, target = shuffle(iris, target)
     
-    iris, target = simpleDataset(20,0.6)    
+    data, target = simpleDataset(20,0.6)
     
-    ncluster = 4 #3 for iris, 4 for simple
-    
-    labels = kMeansCluster(iris, ncluster)
-    randomlabels = randomCluster(iris, ncluster)
-    calabels = CACluster(iris, ncluster)
-    
-    
-    print "Random score:", score(iris, randomlabels)
-    print "Kmeans score:", score(iris, labels)
-    print "Target score:", score(iris, target)
-    print "CA score:", score(iris, calabels)
+    n_cluster = 4 #3 for iris, 4 for simple
+
+    clusterers = {'kMeans' : kMeansCluster(),
+                  'Random' : randomCluster(),
+                  'Target' : perfectCluster(target)}
+
+    testclusterers(data, n_cluster, **clusterers)
