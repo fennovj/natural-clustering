@@ -3,7 +3,7 @@ __author__ = 'Fenno'
 from clustering import Clustering
 from app.score import score, getlabels
 from numpy.random import randint, rand
-from numpy import zeros, shape, max, argmax, copy
+from numpy import zeros, shape, min, argmin, copy
 
 
 class ParticleSwarmCluster(Clustering):
@@ -29,8 +29,8 @@ class ParticleSwarmCluster(Clustering):
         velocities = zeros((self.n_particles, n_clusters, d))
 
         bestscores = [score(data, centroids=locations[i, :, :], norm=self.norm) for i in range(self.n_particles)]
-        sbestlocation = locations[argmax(bestscores), :, :]
-        sbestscore = max(bestscores)
+        sbestlocation = locations[argmin(bestscores), :, :]
+        sbestscore = min(bestscores)
 
         for i in range(self.n_iterations):
             if i % 100 == 0:
