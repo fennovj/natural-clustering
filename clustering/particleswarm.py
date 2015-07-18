@@ -8,14 +8,14 @@ from numpy import zeros, shape, min, argmin, copy
 
 class ParticleSwarmCluster(Clustering):
 
-    def __init__(self, n_particles=10, n_iterations=1000, w=0.72, c1=1.49, c2=1.49, norm=2, printfreq=50):
+    def __init__(self, n_particles=10, n_iterations=1000, w=0.72, c1=1.49, c2=1.49, norm=2, printfreq=float('inf')):
         self.n_particles = n_particles
         self.n_iterations = n_iterations
         self.w = w
         self.c1 = c1
         self.c2 = c2
         self.norm = norm
-        self.printfreq = printfreq  # For no printing, give a value like 0.1 or float('inf')
+        self.printfreq = printfreq  # For no printing, float('inf')
 
     def cluster(self, data, n_clusters):
 
