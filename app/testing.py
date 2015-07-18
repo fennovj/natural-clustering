@@ -9,7 +9,7 @@ from numpy import array, shape
 from numpy.random import rand
 from clustering.clustering import RandomCluster, PerfectCluster
 from clustering.kmeans import KMeansCluster
-# from clustering.cellular_automata import CACluster
+from clustering.cellular_automata import CACluster
 from clustering.particleswarm import ParticleSwarmCluster
 from clustering.antcolony import AntColonyCluster
 from clustering.artificialbee import ArtificialBeeCluster
@@ -52,7 +52,7 @@ if __name__ == '__main__':
 
     clusterers = {'kMeans': KMeansCluster(),
                   'Random': RandomCluster(),
-                  # 'Cellular Automata': CACluster(),
+                  'Cellular Automata': CACluster(),
                   'Particle Swarm': ParticleSwarmCluster(),
                   'Ant Colony': AntColonyCluster(),
                   'Artificial Bee': ArtificialBeeCluster(),
