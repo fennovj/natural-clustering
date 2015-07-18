@@ -12,6 +12,7 @@ from clustering.kmeans import KMeansCluster
 # from clustering.cellular_automata import CACluster
 from clustering.particleswarm import ParticleSwarmCluster
 from clustering.antcolony import AntColonyCluster
+from clustering.artificialbee import ArtificialBeeCluster
 from score import score
 
 
@@ -52,8 +53,9 @@ if __name__ == '__main__':
     clusterers = {'kMeans': KMeansCluster(),
                   'Random': RandomCluster(),
                   # 'Cellular Automata': CACluster(),
-                  'Particle Swarm': ParticleSwarmCluster(n_iterations=100),
+                  'Particle Swarm': ParticleSwarmCluster(),
                   'Ant Colony': AntColonyCluster(),
+                  'Artificial Bee': ArtificialBeeCluster(),
                   'Target': PerfectCluster(target)}
 
     testclusterers(simpledata, simple_n_cluster, **clusterers)

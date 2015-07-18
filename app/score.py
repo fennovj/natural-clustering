@@ -2,6 +2,12 @@ __author__ = 'Fenno'
 
 from numpy import unique, array, mean, sum, shape, argmin
 from scipy.spatial.distance import minkowski
+from numpy.random import rand
+
+
+def randfloat(minimum=0.0, maximum=1.0):
+    rangev = maximum - minimum
+    return (rangev * rand(1, 1)[0][0]) + minimum
 
 
 def getcentroids(data, labels):

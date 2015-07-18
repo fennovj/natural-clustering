@@ -1,9 +1,9 @@
 __author__ = 'Fenno'
 
 from numpy import shape, ones, zeros, array, argmax, average, copy
-from numpy.random import permutation, rand, randint, choice
+from numpy.random import permutation, randint, choice
 from clustering import Clustering
-from app.score import score, getlabels
+from app.score import score, getlabels, randfloat
 from scipy.spatial.distance import minkowski
 
 
@@ -36,7 +36,7 @@ class AntColonyCluster(Clustering):
 
         for it in range(self.n_iter):
 
-            for k in range(self.n_ants):
+            for _ in range(self.n_ants):
 
                 # memory = -1 * ones(n_samples, dtype='int')
                 weights = zeros((n_samples, n_clusters), dtype='bool')
@@ -45,7 +45,7 @@ class AntColonyCluster(Clustering):
                 for i in permutation(n_samples):
                     scores = self.centroidscore(data[i, :], centroids, pheromone[i, :], self.beta)
 
-                    if rand() < self.q0:
+                    if randfloat() < self.q0:
                         j = argmax(scores)  # exploit
                     else:
                         j = choice(n_clusters, p=(scores / sum(scores)))  # explore
@@ -61,7 +61,7 @@ class AntColonyCluster(Clustering):
 
             pheromone = (self.ro * pheromone) + ((1.0 / bestscore) * bestweights)
 
-            if i % self.printfreq == 0:
-                print "Iteration", i, "best score:", bestscore
+            if it % self.printfreq == 0:
+                print "Iteration", it, "best score:", bestscore
 
         return getlabels(data, centroids=bestcentroids, norm=self.beta)

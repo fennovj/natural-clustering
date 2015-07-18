@@ -8,7 +8,7 @@ from numpy import zeros, shape, min, argmin, copy
 
 class ParticleSwarmCluster(Clustering):
 
-    def __init__(self, n_particles=10, n_iterations=1000, w=0.72, c1=1.49, c2=1.49, norm=2, printfreq=float('inf')):
+    def __init__(self, n_particles=10, n_iterations=100, w=0.72, c1=1.49, c2=1.49, norm=2, printfreq=float('inf')):
         self.n_particles = n_particles
         self.n_iterations = n_iterations
         self.w = w
@@ -21,12 +21,12 @@ class ParticleSwarmCluster(Clustering):
 
         n, d = shape(data)
         locations = zeros((self.n_particles, n_clusters, d))
-        bestlocations = copy(locations)
 
         for i in range(self.n_particles):
             for j in range(n_clusters):
                 locations[i, j, :] = copy(data[randint(n), :])  # Initialize cluster centers to random datapoints
 
+        bestlocations = copy(locations)
         velocities = zeros((self.n_particles, n_clusters, d))
 
         bestscores = [score(data, centroids=locations[i, :, :], norm=self.norm) for i in range(self.n_particles)]
