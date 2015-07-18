@@ -8,13 +8,14 @@ from numpy import zeros, shape, min, argmin, copy
 
 class ParticleSwarmCluster(Clustering):
 
-    def __init__(self, n_particles=10, n_iterations=1000, w=0.72, c1=1.49, c2=1.49, norm=2):
+    def __init__(self, n_particles=10, n_iterations=1000, w=0.72, c1=1.49, c2=1.49, norm=2, printfreq=50):
         self.n_particles = n_particles
         self.n_iterations = n_iterations
         self.w = w
         self.c1 = c1
         self.c2 = c2
         self.norm = norm
+        self.printfreq = printfreq  # For no printing, give a value like 0.1 or float('inf')
 
     def cluster(self, data, n_clusters):
 
@@ -24,16 +25,16 @@ class ParticleSwarmCluster(Clustering):
 
         for i in range(self.n_particles):
             for j in range(n_clusters):
-                locations[i, j, :] = data[randint(n), :]  # Initialize cluster centers to random datapoints
+                locations[i, j, :] = copy(data[randint(n), :])  # Initialize cluster centers to random datapoints
 
         velocities = zeros((self.n_particles, n_clusters, d))
 
         bestscores = [score(data, centroids=locations[i, :, :], norm=self.norm) for i in range(self.n_particles)]
-        sbestlocation = locations[argmin(bestscores), :, :]
+        sbestlocation = copy(locations[argmin(bestscores), :, :])
         sbestscore = min(bestscores)
 
         for i in range(self.n_iterations):
-            if i % 100 == 0:
+            if i % self.printfreq == 0:
                 print "Iteration", i, "best score:", sbestscore
             for j in range(self.n_particles):
                 r = rand(n_clusters, d)
@@ -48,6 +49,6 @@ class ParticleSwarmCluster(Clustering):
                     bestlocations[j, :, :] = locations[j, :, :]
                     if currentscore < sbestscore:
                         sbestscore = currentscore
-                        sbestlocation = locations[j, :, :]
+                        sbestlocation = copy(locations[j, :, :])
 
         return getlabels(data, centroids=sbestlocation, norm=self.norm)

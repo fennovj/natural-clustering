@@ -50,8 +50,8 @@ if __name__ == '__main__':
 
     clusterers = {'kMeans': KMeansCluster(),
                   'Random': RandomCluster(),
-                  'CA': CACluster(),
-                  'ParticleSwarm': ParticleSwarmCluster(n_iterations=350),
+                  #'Cellular Automata': CACluster(),
+                  'Particle Swarm': ParticleSwarmCluster(n_iterations=100),
                   'Target': PerfectCluster(target)}
 
     testclusterers(simpledata, simple_n_cluster, **clusterers)
