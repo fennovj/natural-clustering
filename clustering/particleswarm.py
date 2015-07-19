@@ -35,7 +35,7 @@ class ParticleSwarmCluster(Clustering):
 
         for i in range(self.n_iterations):
             if i % self.printfreq == 0:
-                print "Iteration", i, "best score:", sbestscore
+                print "Particle swarm iteration", i, "best score:", sbestscore
             for j in range(self.n_particles):
                 r = rand(n_clusters, d)
                 s = rand(n_clusters, d)

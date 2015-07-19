@@ -5,8 +5,8 @@ Created on Tue Jun 02 13:21:01 2015
 @author: Fenno
 """
 
-from numpy import array, shape
-from numpy.random import rand
+from numpy import array, unique
+from numpy.random import rand, permutation
 from clustering.clustering import RandomCluster, PerfectCluster
 from clustering.kmeans import KMeansCluster
 from clustering.cellular_automata import CACluster
@@ -14,23 +14,22 @@ from clustering.particleswarm import ParticleSwarmCluster
 from clustering.antcolony import AntColonyCluster
 from clustering.artificialbee import ArtificialBeeCluster
 from score import score
+from sklearn import datasets
 
 
 def simpledataset(n=20, spread=0.6):
     seeds = array([(0.5, 0.5), (0.5, 1.5), (1.5, 0.5), (1.5, 1.5)] * n)
     labels = array([0, 1, 2, 3] * n)
     offsets = spread * rand((4*n), 2) - (spread/2)
-    return seeds+offsets, labels
+    return seeds+offsets, labels, 4
 
 
-def shuffle(data, classes=None):
-    """ Shuffle the rows of data.	"""    
-    from random import shuffle as rshuffle 
-    key = array(range(shape(data)[0]))
-    rshuffle(key)
-    data = data[key, :]
-    classes = classes[key]
-    return data, classes
+def realdataset(dataset=datasets.load_iris):
+    data = dataset().data
+    target = dataset().target
+    shuffle = permutation(len(target))
+    n_clusters = len(unique(target))
+    return data[shuffle], target[shuffle], n_clusters
 
 
 def testclusterers(data, n_cluster, **clusterlist):
@@ -41,21 +40,16 @@ def testclusterers(data, n_cluster, **clusterlist):
         print key, "score:", score(data, labels[i])
 
 if __name__ == '__main__':
-    # from sklearn import datasets
-    # iris = datasets.load_iris().data
-    # target = datasets.load_iris().target
-    # iris, target = shuffle(iris, target)
-    
-    simpledata, target = simpledataset(20, 0.6)
-    
-    simple_n_cluster = 4  # 3 for iris, 4 for simple
+    # simpledata, simpletarget, simple_n_cluster = simpledataset()
+    irisdata, iristarget, iris_n_cluster = realdataset()
 
     clusterers = {'kMeans': KMeansCluster(),
                   'Random': RandomCluster(),
-                  'Cellular Automata': CACluster(),
+                  'Cellular Automata': CACluster(printfreq=100),
                   'Particle Swarm': ParticleSwarmCluster(),
                   'Ant Colony': AntColonyCluster(),
                   'Artificial Bee': ArtificialBeeCluster(),
-                  'Target': PerfectCluster(target)}
+                  'Target': PerfectCluster(iristarget)}
 
-    testclusterers(simpledata, simple_n_cluster, **clusterers)
+    # testclusterers(simpledata, simple_n_cluster, **clusterers)
+    testclusterers(irisdata, iris_n_cluster, **clusterers)

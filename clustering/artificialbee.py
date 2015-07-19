@@ -51,7 +51,7 @@ class ArtificialBeeCluster(Clustering):
 
         for it in range(self.n_iter):
             if it % self.printfreq == 0:
-                print "Iteration", it, "best score:", bestscore
+                print "Artificial Bee iteration", it, "best score:", bestscore
 
             for k in range(self.n_bees):
                 newcentroids, newscore = self.getnewcentroids(data, locations, k)

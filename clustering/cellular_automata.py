@@ -42,7 +42,7 @@ class CACluster(Clustering):
 
         for count in range(self.maxiter):
             if count % self.printfreq == 0:
-                print count, changemade
+                print "CACluster at iteration", count, changemade, "changes made this iteration."
             changemade = 0
 
             for i in range(n):

@@ -62,6 +62,6 @@ class AntColonyCluster(Clustering):
             pheromone = (self.ro * pheromone) + ((1.0 / bestscore) * bestweights)
 
             if it % self.printfreq == 0:
-                print "Iteration", it, "best score:", bestscore
+                print "Ant Colony iteration", it, "best score:", bestscore
 
         return getlabels(data, centroids=bestcentroids, norm=self.beta)
