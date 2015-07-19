@@ -1,15 +1,19 @@
 __author__ = 'Fenno'
 
 
-from numpy import shape, array, sort, copy, zeros
+from numpy import shape, array, sort, copy, zeros, sum, nonzero
 from numpy.random import permutation
 from scipy.spatial.distance import pdist, squareform
 from clustering import Clustering
 
+from matplotlib.pyplot import matshow, show, plot
+from app.score import score
+from sklearn.datasets import load_iris
+
 
 class CACluster(Clustering):
 
-    def __init__(self, r=0.5, norm=2, maxiter=5000, printfreq=float('inf'), tracktape=False):
+    def __init__(self, r=1.0, norm=2, maxiter=5, printfreq=float('inf'), tracktape=False):
         self.r = r  # either an integer, or a fraction of the dataset)
         self.norm = norm
         self.maxiter = maxiter
@@ -35,7 +39,7 @@ class CACluster(Clustering):
 
     def cluster(self, data, n_clusters):
         n, _ = shape(data)
-        maxr = int(self.r * n) if self.r < 1 else self.r
+        maxr = int(self.r * n) if self.r <= 1 else self.r
 
         distances = squareform(pdist(data, metric='minkowski', p=self.norm))
         tape = permutation(n)
@@ -70,18 +74,33 @@ class CACluster(Clustering):
         return self.assignclasses(tape, distances, n_clusters)
 
 
-if __name__ == '__main__':
-    from sklearn.datasets import load_iris
+def plotclusteringattempt(clusterer=None, r=1.0):
+    if clusterer is None:
+        clusterer = CACluster(r=r)
+    clusterer.tracktape = True  # nececcary for plotting everything
+
     irisdata, iristarget, iris_n_cluster = load_iris().data, load_iris().target, 3
-    caclusterer = CACluster(r=0.5, maxiter=10, printfreq=100, tracktape=True)
-    labels = caclusterer.cluster(irisdata, iris_n_cluster)
+    labels = clusterer.cluster(irisdata, iris_n_cluster)
+    dist = squareform(pdist(irisdata, metric='minkowski', p=clusterer.norm))
+    endindex = nonzero(sum(clusterer.tapehistory, axis=1))[0][-1]
+    lasttape = clusterer.tapehistory[endindex, :]
+    m = len(iristarget)
+    chain = array([dist[lasttape[j], lasttape[(j+1) % m]] for j in range(m)])
+    print "chain", chain
+    lastboundaries = clusterer.getboundaries(lasttape, dist, iris_n_cluster)
 
-    from app.score import score
-    print "score: ", score(irisdata, labels=labels, norm=caclusterer.norm)
-    clusterpicture = labels[caclusterer.tapehistory]
-    print caclusterer.tapehistory[-2:, :]
-    print clusterpicture[-2:, :]
+    clusterpicture = iristarget[clusterer.tapehistory]
+    for b in lastboundaries:
+        clusterpicture[:, b] = iris_n_cluster
 
-    from matplotlib.pyplot import matshow, show
-    matshow(clusterpicture[:1000, :])
+    plot(chain)
+    print "number of iterations", endindex
+    print "final tape", lasttape
+    print "final true classes", clusterpicture[endindex, :]
+    print "score: ", score(irisdata, labels=labels, norm=clusterer.norm)
+
+    matshow(clusterpicture[:endindex, :])
     show()
+
+if __name__ == '__main__':
+    plotclusteringattempt(r=0.65)
